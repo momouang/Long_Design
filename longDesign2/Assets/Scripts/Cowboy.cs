@@ -15,10 +15,11 @@ public class Cowboy : MonoBehaviour
     [SerializeField] private LayerMask _layerMask;
 
     private float _attackRange = 3f;
-    private float _rayDistance = 5.0f;
-    private float _stoppingDistance = 1.5f;
-    private float wanderRange = 10f;
+    //private float _rayDistance = 5.0f;
+    //private float _stoppingDistance = 1.5f;
+    private float wanderRange = 20f;
     private float checkRate;
+    private float nextCheck;
     private Transform cowTransform;
 
     //private Vector3 _destination;
@@ -36,13 +37,14 @@ public class Cowboy : MonoBehaviour
     void Start()
     {
         checkRate = Random.Range(0.3f,0.4f);
+        cowTransform = this.gameObject.transform;
     }
 
     private void Update()
     {
         if(Time.time < Time.deltaTime + checkRate)
         {
-
+            nextCheck = Time.time + checkRate;
         }
 
         switch (_currentState)
@@ -61,6 +63,7 @@ public class Cowboy : MonoBehaviour
                         if (NeedsDestination(cowTransform.position, wanderRange, out wanderTarget))
                         {
                             agent.SetDestination(wanderTarget);
+                            Debug.Log(wanderTarget);
                             anim.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
                             forwardAmount = Vector3.forward.z;
                         }
@@ -145,7 +148,7 @@ public class Cowboy : MonoBehaviour
     bool NeedsDestination(Vector3 center, float range, out Vector3 result)
     {
         Vector3 randomPoint = center + Random.insideUnitSphere * wanderRange;
-        if(NavMesh.SamplePosition(randomPoint, out navHit,1.0f, NavMesh.AllAreas))
+        if(NavMesh.SamplePosition(randomPoint, out navHit,20f, NavMesh.AllAreas))
         {
             result = navHit.position;
             return true;
