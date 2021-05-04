@@ -11,19 +11,16 @@ public class NormalBoy : MonoBehaviour
 
     public NavMeshAgent agent;
 
-    //public Team Team => _team;
-    //[SerializeField] private Team _team;
-    [SerializeField] private LayerMask _layerMask;
+    private float _hideRange = 5f;
+   
 
-    private float _hideRange = 15f;
-    private float _rayDistance = 10.0f;
-    private float _stoppingDistance = 1.5f;
-
-    private Vector3 _destination;
-    private Quaternion _desiredRotation;
-    private Vector3 _direction;
+    public CheckAggroTest aggroScript;
+    //private Vector3 _destination;
+    //private Quaternion _desiredRotation;
+    //private Vector3 _direction;
     private Cowboy _target;
     private NormalState _currentState;
+ 
 
 
     private void Update()
@@ -32,26 +29,27 @@ public class NormalBoy : MonoBehaviour
         {
             case NormalState.Wander:
                 {
-                    if (NeedsDestination())
+                    Debug.Log("N_Wander");
+                    if (aggroScript.NeedsDestination())
                     {
-                        GetDestination();
+                        aggroScript.GetDestination();
                     }
 
-                    transform.rotation = _desiredRotation;
+                    transform.rotation = aggroScript._desiredRotation;
 
-                    transform.Translate(Vector3.forward * Time.deltaTime * 2f);
+                    transform.Translate(Vector3.forward * Time.deltaTime);
                     anim.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
                     forwardAmount = Vector3.forward.z;
 
-                    var rayColor = IsPathBlocked() ? Color.red : Color.green;
-                    Debug.DrawRay(transform.position, _direction * _rayDistance, rayColor);
+                    
 
-                    while (IsPathBlocked())
+                    while (aggroScript.IsPathBlocked())
                     {
-                        GetDestination();
+                        
+                        aggroScript.GetDestination();
                     }
 
-                    var targetToAggro = CheckForAggro();
+                    var targetToAggro = gameObject.GetComponent<CheckAggroTest>().CheckForAggro();
                     if (targetToAggro != null)
                     {
                         _target = targetToAggro.GetComponent<Cowboy>();
@@ -62,21 +60,31 @@ public class NormalBoy : MonoBehaviour
                 }
             case NormalState.Escape:
                 {
+                    Debug.Log("escaping");
                     if (_target == null)
                     {
                         _currentState = NormalState.Wander;
                         return;
                     }
 
-                    Vector3 dirtoPlayer = transform.position - _target.transform.position;
-                    Vector3 newPos = transform.position + dirtoPlayer;
-                    transform.Translate(newPos);
 
+                    float distance = Vector3.Distance(transform.position, _target.transform.position);
 
-                    if (Vector3.Distance(transform.position, _target.transform.position) > _hideRange)
-                    {
+                    
+                        Debug.Log("N_distance");
+                        Vector3 dirtoPlayer = transform.position - _target.transform.position;
+                        Vector3 newPos = (transform.position + dirtoPlayer);
+                        if (agent.SetDestination(newPos) == false)
+                        {
+                            Debug.Log("N_SetDest Error: " + dirtoPlayer.ToString() + ":" + newPos.ToString());
+                        }
+                    
+                    if (distance >= _hideRange)
+                    { 
                         _currentState = NormalState.Hide;
+                        //agent.Stop();
                     }
+                    
                     break;
                 }
             case NormalState.Hide:
@@ -89,46 +97,11 @@ public class NormalBoy : MonoBehaviour
         }
     }
 
-    private bool IsPathBlocked()
-    {
-        Ray ray = new Ray(transform.position, _direction);
-        var hitSomething = Physics.RaycastAll(ray, _rayDistance, _layerMask);
-        return hitSomething.Any();
-    }
 
-    private void GetDestination()
-    {
-        Vector3 testPosition = (transform.position + (transform.forward * 2f)) +
-                               new Vector3(UnityEngine.Random.Range(-4.5f, 4.5f), 0f,
-                                   UnityEngine.Random.Range(-4.5f, 4.5f));
+    //Quaternion startingAngle = Quaternion.AngleAxis(-60, Vector3.up);
+    //Quaternion stepAngle = Quaternion.AngleAxis(5, Vector3.up);
 
-        _destination = new Vector3(testPosition.x, 1f, testPosition.z);
-
-        _direction = Vector3.Normalize(_destination - transform.position);
-        _direction = new Vector3(_direction.x, 0f, _direction.z);
-        _desiredRotation = Quaternion.LookRotation(_direction);
-    }
-
-    private bool NeedsDestination()
-    {
-        if (_destination == Vector3.zero)
-            return true;
-
-        var distance = Vector3.Distance(transform.position, _destination);
-        if (distance <= _stoppingDistance)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-
-
-    Quaternion startingAngle = Quaternion.AngleAxis(-60, Vector3.up);
-    Quaternion stepAngle = Quaternion.AngleAxis(5, Vector3.up);
-
-    private Transform CheckForAggro()
+    /*private Transform CheckForAggro()
     {
         float aggroRadius = 10f;
 
@@ -159,7 +132,7 @@ public class NormalBoy : MonoBehaviour
         }
 
         return null;
-    }
+    }*/
 }
 
 public enum NormalState
