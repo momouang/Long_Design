@@ -10,6 +10,6 @@ public class Billboard : MonoBehaviour
 
     void Update()
     {
-        transform.LookAt(transform.position + cam.forward);
+        Quaternion.LookRotation(transform.position + cam.forward);
     }
 }

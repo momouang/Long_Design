@@ -16,6 +16,7 @@ public class Arthur : MonoBehaviour
     private Cowboy _target;
 
     public CheckAggroTest aggroScript;
+    public GameObject arthurBody;
 
     public NavMeshAgent agent;
     public Animator anim;
@@ -32,6 +33,7 @@ public class Arthur : MonoBehaviour
 
     void Update()
     {
+        //arthurBody.transform.position = gameObject.transform.position;
         switch (_currentState)
         { 
             case ArthurState.Wander:

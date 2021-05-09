@@ -39,13 +39,10 @@ public class NormalBoy : MonoBehaviour
 
                     transform.Translate(Vector3.forward * Time.deltaTime);
                     anim.SetFloat("Forward", forwardAmount, 0.1f, Time.deltaTime);
-                    forwardAmount = Vector3.forward.z;
-
-                    
+                    forwardAmount = Vector3.forward.z;                  
 
                     while (aggroScript.IsPathBlocked())
-                    {
-                        
+                    {                      
                         aggroScript.GetDestination();
                     }
 
@@ -106,9 +103,9 @@ public class NormalBoy : MonoBehaviour
         float aggroRadius = 10f;
 
         RaycastHit hit;
-        var angle = transform.rotation * startingAngle;
-        var direction = angle * Vector3.forward;
-        var pos = transform.position;
+        var angle = transform.rotation * startingAngle;                            #Gaming_Portfolio_of
+        var direction = angle * Vector3.forward;                                   #Momo_Uang
+        var pos = transform.position;                                              #2021
         for (var i = 0; i < 24; i++)
         {
             if (Physics.Raycast(pos, direction, out hit, aggroRadius))

@@ -6,6 +6,7 @@ public class Cowboy : MonoBehaviour
 
 {
     public Animator anim;
+    public CheckAggroTest aggroScript;
     //float forwardAmount;
 
     public NavMeshAgent agent;

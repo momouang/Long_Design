@@ -31,14 +31,15 @@ public class CheckAggroTest : MonoBehaviour
     public void GetDestination()
     {
         Vector3 testPosition = (transform.position + (transform.forward * 2f)) +
-                               new Vector3(UnityEngine.Random.Range(-4.5f, 4.5f), 0f,
-                                   UnityEngine.Random.Range(-4.5f, 4.5f));
+                               new Vector3(Random.Range(-8f, 8f), 0f,
+                                   Random.Range(-8f, 8f));
 
-        _destination = new Vector3(testPosition.x, 1f, testPosition.z);
+        _destination = new Vector3(testPosition.x, transform.position.y, testPosition.z);
 
         _direction = Vector3.Normalize(_destination - transform.position);
         _direction = new Vector3(_direction.x, 0f, _direction.z);
         _desiredRotation = Quaternion.LookRotation(_direction);
+        Debug.Log(_desiredRotation);
 
     }
 
